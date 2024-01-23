@@ -10,15 +10,26 @@ export default function Login() {
     const [password, setPassword] = useState("");
     
     const login = () => {
-        apiService.login(username, password).then((data: any) => {
-            storeService.setUser(data);
-            router.push('/home');
-        }).catch((error) => {
-            let statusCode = error.response.status;
-            let message = statusCode === 401 ? "Invalid password!": "User doesn't exist!";
-
+        if (username !== "" && password !== "") {
+            apiService.login(username, password).then((data: any) => {
+                storeService.setUser(data);
+                router.push('/home');
+            }).catch((error) => {
+                let statusCode = error.response.status;
+                let message = statusCode === 401 ? "Invalid password!": "User doesn't exist!";
+    
+                invalidLogin(message);
+            });
+        } else if (username === "" && password === "") {
+            let message = "Username and password are empty!";
             invalidLogin(message);
-        });
+        } else if (username === "") {
+            let message = "Username is empty!";
+            invalidLogin(message);
+        } else if (password === "") {
+            let message = "Password is empty!";
+            invalidLogin(message);
+        }
     } 
 
     const forgotPassword = () => {
@@ -171,4 +182,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         letterSpacing: 0.25,
     },
-  });
+});

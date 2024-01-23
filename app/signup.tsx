@@ -1,19 +1,81 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { Text, View } from '../components/Themed';
+import apiService from "../services/Api";
 
 export default function SignUpScreen() {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
 
+  const addUser = () => {
+    if (isSignupValid()) {
+      let user = {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        username: username,
+        password: password
+      }
+
+      //apiService.addUser(user);
+      //alertMessage("User added!");
+    }
+  }
+
+  const isSignupValid = () => {
+    if (firstName === "") {
+      alertMessage("First name is empty!");
+      return false;
+    }
+
+    if (lastName === "") {
+      alertMessage("Last name is empty!");
+      return false;
+    }
+
+    if (email === "") {
+      alertMessage("Email is empty!");
+      return false;
+    }
+
+    if (username === "") {
+      alertMessage("Username is empty!");
+      return false;
+    }
+
+    if (password === "") {
+      alertMessage("Password is empty!");
+      return false;
+    }
+
+    if (repeatPassword === "") {
+      alertMessage("Repeated password is empty!");
+      return false;
+    }
+
+    if (password !== repeatPassword) {
+      alertMessage("Passwords don't match!");
+      return false;
+    }
+
+    return true;
+  }
+
+  const alertMessage = (message: string) => {
+    Alert.alert('Login error.', message, [
+        { text: 'Close'}
+    ]);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image
-          source={require('../assets/images/logo-black.png')}
+          source={require('../assets/images/logo-gray.png')}
           style={styles.logo}
         />
       </View>
@@ -21,10 +83,18 @@ export default function SignUpScreen() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input} 
-          onChangeText={(fullName) => setFullName(fullName)}
-          value={fullName}
-          placeholder="Full name"
-          placeholderTextColor="black"
+          onChangeText={(firstName) => setFirstName(firstName)}
+          value={firstName}
+          placeholder="First name"
+          placeholderTextColor="#262626"
+        />
+
+        <TextInput
+          style={styles.input} 
+          onChangeText={(lastName) => setLastName(lastName)}
+          value={lastName}
+          placeholder="Last name"
+          placeholderTextColor="#262626"
         />
 
         <TextInput
@@ -32,7 +102,7 @@ export default function SignUpScreen() {
           onChangeText={(email) => setEmail(email)}
           value={email}
           placeholder="Email"
-          placeholderTextColor="black"
+          placeholderTextColor="#262626"
         />
 
         <TextInput
@@ -40,7 +110,7 @@ export default function SignUpScreen() {
           onChangeText={(username) => setUsername(username)}
           value={username}
           placeholder="Username"
-          placeholderTextColor="black"
+          placeholderTextColor="#262626"
         />
 
         <TextInput style={styles.input}
@@ -48,10 +118,18 @@ export default function SignUpScreen() {
           value={password}
           secureTextEntry={true}
           placeholder="Password"
-          placeholderTextColor="black"
+          placeholderTextColor="#262626"
         />
 
-        <TouchableOpacity style={styles.signUpButton} onPress={() => {}}>
+        <TextInput style={styles.input}
+          onChangeText={(repeatPassword) => setRepeatPassword(repeatPassword)}
+          value={repeatPassword}
+          secureTextEntry={true}
+          placeholder="Repeat password"
+          placeholderTextColor="#262626"
+        />
+
+        <TouchableOpacity style={styles.signUpButton} onPress={addUser}>
           <Text style={styles.signUpButtonText}>Sign up</Text>
         </TouchableOpacity >
       </View>
@@ -68,9 +146,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white'
   },
   logoContainer: {
-    height: 200,
+    height: 160,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 10,
   },
   logo: {
     width: 200,
@@ -79,16 +158,15 @@ const styles = StyleSheet.create({
   inputContainer: {
     width: '100%',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 100,
+    justifyContent: 'center'
   },
   input: {
     width: '65%',
     height: 50,
     marginBottom: 20,
     borderBottomWidth: 1,
-    color: 'black',
+    borderColor: '#262626',
+    color: '#262626',
   },
   signUpButton: {
     width: '65%',
@@ -96,13 +174,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
-    backgroundColor: 'black',
+    backgroundColor: '#262626',
     borderRadius: 6,
   },
   signUpButtonText: {
     fontSize: 17,
     lineHeight: 21,
-    color: 'white',
+    color: '#e6e6e6',
     fontWeight: 'bold',
     letterSpacing: 0.25,
   },

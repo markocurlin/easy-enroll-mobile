@@ -19,6 +19,14 @@ class ApiService {
             throw error;
         }
     }
+
+    async addUser(user: any): Promise<any> {
+
+    }
+
+    async editUser(user: any): Promise<any> {
+        
+    }
 }
 
 const apiService = new ApiService();
