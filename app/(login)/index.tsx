@@ -1,17 +1,37 @@
 import React, { useState } from "react";
-import { Link } from 'expo-router';
-import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
+import { Link, router } from 'expo-router';
+import { StyleSheet, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { Text, View } from '../../components/Themed';
 import apiService from "../../services/Api";
+import storeService from "../../services/Store";
 
 export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    
+    const login = () => {
+        apiService.login(username, password).then((data: any) => {
+            storeService.setUser(data);
+            router.push('/home');
+        }).catch((error) => {
+            let statusCode = error.response.status;
+            let message = statusCode === 401 ? "Invalid password!": "User doesn't exist!";
 
-    const getUser = () => {
-        //apiService.test();
-        //console.log("test")
+            invalidLogin(message);
+        });
     } 
+
+    const forgotPassword = () => {
+        Alert.alert('Comming soon!', 'We are still working on it...', [
+            { text: 'Close'}
+        ]);
+    }
+
+    const invalidLogin = (message: string) => {
+        Alert.alert('Login error.', message, [
+            { text: 'Close'}
+        ]);
+    }
 
     return (
         <View style={styles.container}>
@@ -32,7 +52,7 @@ export default function Login() {
                         onChangeText={(username) => setUsername(username)}
                         value={username}
                         placeholder="Username"
-                        placeholderTextColor="black"
+                        placeholderTextColor="#262626"
                     />
 
                     <TextInput style={styles.input}
@@ -40,52 +60,51 @@ export default function Login() {
                         value={password}
                         secureTextEntry={true}
                         placeholder="Password"
-                        placeholderTextColor="black"
+                        placeholderTextColor="#262626"
                     />
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={forgotPassword}>
                         <Text style={styles.forgotButtonText}>Forgot Password?</Text> 
                     </TouchableOpacity>
 
-                    <Link href="/home" asChild>
-                        <TouchableOpacity style={styles.loginButton} onPress={() => getUser()}>
+                    <TouchableOpacity style={styles.loginButton} onPress={login}>
                             <Text style={styles.loginButtonText}>Login</Text>
-                        </TouchableOpacity >
-                    </Link>
+                    </TouchableOpacity >
 
                     <Link href="/signup" asChild>
                         <TouchableOpacity style={styles.signUpButton} onPress={() => {}}>
                             <Text style={styles.signUpButtonText}>Sign up</Text>
                         </TouchableOpacity >
                     </Link>
-
                 </View>
-                
             </View>
+
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'black',
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: '100%',
+        backgroundColor: '#262626',
+        display: 'flex',
+        justifyContent: 'space-between'
     },
+  
     logoContainer: {
-        height: 300,
+        height: '36%',
         alignItems: 'center',
         justifyContent: 'center',
+        marginVertical: 10,
     },
     logo: {
-        width: 260,
-        marginTop: 40,
+        width: 250,
+        marginTop: 20,
         resizeMode: 'contain',
     },
     loginContainer: {
         width: '100%',
-        flex: 1,
+        paddingVertical: 30,
         justifyContent: 'space-evenly',
         borderTopRightRadius: 40,
         borderTopLeftRadius: 40,
@@ -97,7 +116,7 @@ const styles = StyleSheet.create({
     loginTitle: {
         width: '65%',
         alignItems: 'center',
-        color: 'black',
+        color: '#262626',
         fontSize: 38,
         fontWeight: 'bold',
     },
@@ -105,19 +124,18 @@ const styles = StyleSheet.create({
     inputContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 60,
+        marginBottom: 40,
     },
-
     input: {
         width: '65%',
         height: 50,
-        marginBottom: 30,
+        marginBottom: 25,
         borderBottomWidth: 1,
-        color: 'black',
+        color: '#262626',
     },
     forgotButtonText: {
-        marginBottom: 30,
-        color: 'black',
+        marginBottom: 25,
+        color: '#262626',
     },
 
     loginButton: {
@@ -126,17 +144,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,
-        backgroundColor: 'black',
+        backgroundColor: '#262626',
         borderRadius: 6,
     },
     loginButtonText: {
         fontSize: 17,
         lineHeight: 21,
-        color: 'white',
+        color: '#e6e6e6',
         fontWeight: 'bold',
         letterSpacing: 0.25,
     },
-
     signUpButton: {
         width: '65%',
         height: 50,
@@ -145,13 +162,12 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 6,
         borderWidth: 2,
-        borderColor: 'black'
+        borderColor: '#262626'
     },
-
     signUpButtonText: {
         fontSize: 17,
         lineHeight: 21,
-        color: 'black',
+        color: '#262626',
         fontWeight: 'bold',
         letterSpacing: 0.25,
     },

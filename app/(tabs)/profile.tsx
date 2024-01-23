@@ -1,126 +1,226 @@
-import { StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Text, View } from '../../components/Themed';
+import { FontAwesome } from '@expo/vector-icons';
+import storeService from '../../services/Store';
 
 export default function ProfileScreen() {
-  return (
-    <View style={styles.container}>
-      <View style={styles.profileContainer}>
-      <Image
-        source={require('../../assets/images/profile.png')}
-        style={styles.profile}
-        />
-      </View>
+  const [id, setId] = useState(0);
+  const [role, setRole] = useState(0);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [user, setUser] = useState({
+    id: '',
+    firstName: '',
+    lastName: '',
+    username: '',
+    email: '',
+    role: '',
+    present: ''
+  });
 
-      <View style={styles.profileInfoContainer}>
-        <Text style={styles.profileTitle}>William Kurir</Text>
-        <Text style={styles.usernameTitle}>@wkurir69</Text>
-        <Text style={styles.emailTitle}>wkurir69@gmai.com</Text>
-        
-        <TouchableOpacity style={styles.editButton} onPress={() => {}}>
-          <Text style={styles.editButtonText}>Edit</Text>
-        </TouchableOpacity >
-        <TouchableOpacity style={styles.logoutButton} onPress={() => {}}>
-          <Text style={styles.logoutButtonText}>Logout</Text>
-        </TouchableOpacity >
-      
-        <Image
-          source={require('../../assets/images/logo-black.png')}
-          style={styles.logo}
-        />
+  const changeProfilePhoto = () => {
+    Alert.alert('Comming soon!', 'We are still working on it...', [
+      { text: 'Close'}
+    ]);
+  }
+
+  const editProfile = () => {
+    setIsDisabled(!isDisabled);
+  }
+
+  const saveProfile = () => {
+
+  }
+
+  useEffect(() => {
+    let currentUser = storeService.getUser();
+
+    setUser(currentUser);
+    setId(currentUser.id);
+    setFirstName(currentUser.firstName);
+    setLastName(currentUser.lastName);
+    setUsername(currentUser.username);
+    setEmail(currentUser.email);
+    setRole(currentUser.role);
+  }, []);
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.profileIconContainer}>
+        <FontAwesome name='user-circle' size={150} color='#e6e6e6'/>
+        <View style={styles.editIconContainer}>
+          <FontAwesome name='image' size={20} color='#e6e6e6' onPress={changeProfilePhoto}/>
+        </View>
       </View>
-    </View>
+      <View style={styles.profileInfoContainer}>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>{`${user.firstName} ${user.lastName}`}</Text>
+          <TouchableOpacity onPress={editProfile}>
+            <FontAwesome name='edit' size={24} color='#e6e6e6' />
+          </TouchableOpacity >
+        </View>
+        <Text style={styles.roleTitle}>Student</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(firstName) => setFirstName(firstName)}
+            value={firstName}
+            placeholder='First name'
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+          <TextInput
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(lastName) => setLastName(lastName)}
+            value={lastName}
+            placeholder='Last name'
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+          <TextInput
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(email) => setEmail(email)}
+            value={email}
+            placeholder='Email'
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+          <TextInput
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(username) => setUsername(username)}
+            value={username}
+            placeholder="Username"
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+          <TextInput 
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(password) => setPassword(password)}
+            value={password}
+            secureTextEntry={true}
+            placeholder="Password"
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+          <TextInput 
+            style={[styles.input, { color: isDisabled ? '#e6e6e6' : 'gray', borderColor: isDisabled ? '#e6e6e6' : 'gray' }]}
+            onChangeText={(repeatPassword) => setRepeatPassword(repeatPassword)}
+            value={repeatPassword}
+            secureTextEntry={true}
+            placeholder="Repeat password"
+            placeholderTextColor={ isDisabled ? '#e6e6e6' : 'gray' }
+            editable={isDisabled}
+          />
+        </View>
+        <TouchableOpacity style={[styles.button, { opacity: isDisabled ? 1 : 0.5 }]} onPress={saveProfile} disabled={!isDisabled}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity >
+      </View>
+      <View style={styles.lecturesContainer}>
+        <Text style={styles.lecturesHistoryTitle}>Lectures history</Text>
+        <View style={styles.horizontalLine}/>
+        <Text style={styles.lectureTitle}>Comming soon...</Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
-    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#262626',
+  },
+  profileIconContainer: {
+    marginTop: 30,
+  },
+  editIconContainer: {
+    width: 45,
+    height: 45,
+    position: 'absolute',
+    right: '0%',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profileContainer: {
-    height: 230,
-    position: 'relative',
-    alignItems: 'center',
-    zIndex: 2,
-  },
-  profile: {
-    width: 190,
-    resizeMode: 'contain',
-    position: 'absolute',
-    top: -24
+    backgroundColor: 'gray',
+    borderRadius: 50,
+    borderColor: '#262626',
+    borderWidth: 4,
   },
   profileInfoContainer: {
+    width: '85%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 5,
+  },
+  titleContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    marginRight: 11,
+    color: '#e6e6e6'
+  },
+  roleTitle: {
+    fontSize: 18,
+    color: '#e6e6e6'
+  },
+  inputContainer: {
+    width: '85%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 15,
+  },
+  input: {
     width: '100%',
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopRightRadius: 40,
-    borderTopLeftRadius: 40,
-    backgroundColor: 'white',
-    zIndex: 1
+    height: 43,
+    marginBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: '#e6e6e6',
   },
-
-  profileTitle: {
-    alignItems: 'center',
-    marginTop: 50,
-    color: 'black',
-    fontSize: 38,
-    fontWeight: 'bold',
-  },
-
-  usernameTitle: {
-    alignItems: 'center',
-    color: 'grey',
-    fontSize: 18,
-    marginBottom: 2,
-  },
-
-  emailTitle: {
-    alignItems: 'center',
-    color: 'grey',
-    fontSize: 18,
-    marginBottom: 20,
-  },
-
-
-  editButton: {
-    width: '65%',
+  button: {
+    width: '85%',
     height: 50,
+    display:'flex',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
-    backgroundColor: 'black',
+    backgroundColor: '#1A1A1A',
     borderRadius: 6,
   },
-  editButtonText: {
-    fontSize: 17,
-    lineHeight: 21,
-    color: 'white',
+  buttonText: {
+    fontSize: 16,
+    color: '#e6e6e6',
     fontWeight: 'bold',
     letterSpacing: 0.25,
   },
-  logoutButton: {
-    width: '65%',
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 40,
-    backgroundColor: 'white',
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: 'black'
-},
-  logoutButtonText: {
-    fontSize: 17,
-    lineHeight: 21,
-    color: 'black',
-    fontWeight: 'bold',
-    letterSpacing: 0.25,
+  lecturesContainer: {
+    width: '71%',
+    marginBottom: 20,
   },
-  logo: {
-    height: 100,
-    resizeMode: 'contain',
+  lecturesHistoryTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#e6e6e6'
+  },
+  horizontalLine: {
+    borderBottomColor: '#e6e6e6',
+    borderBottomWidth: 1,
+    marginVertical: 12,
+  },
+  lectureTitle: {
+    fontSize: 15,
+    color: '#e6e6e6'
   },
 });

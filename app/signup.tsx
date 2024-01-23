@@ -51,14 +51,6 @@ export default function SignUpScreen() {
           placeholderTextColor="black"
         />
 
-        <TextInput style={styles.input}
-          onChangeText={(repeatPassword) => setRepeatPassword(repeatPassword)}
-          value={repeatPassword}
-          secureTextEntry={true}
-          placeholder="Repeat password"
-          placeholderTextColor="black"
-        />
-
         <TouchableOpacity style={styles.signUpButton} onPress={() => {}}>
           <Text style={styles.signUpButtonText}>Sign up</Text>
         </TouchableOpacity >
