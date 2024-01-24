@@ -66,7 +66,7 @@ export default function SignUpScreen() {
   }
 
   const alertMessage = (message: string) => {
-    Alert.alert('Login error.', message, [
+    Alert.alert('Login error', message, [
         { text: 'Close'}
     ]);
   }

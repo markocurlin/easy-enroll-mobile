@@ -39,7 +39,6 @@ export default function HomeScreen() {
   
   useEffect(() => {
     let currentUser = storeService.getUser();
-
     setUser(currentUser);
 
     scanDevices();
@@ -56,18 +55,24 @@ export default function HomeScreen() {
   }, []);
 
   const scanDevices = () => {
-    dispatch({ type: 'CLEAR' })
+    bleManager.stopDeviceScan();
     
-    bleManager.startDeviceScan(null, null, (error, scannedDevice) => {
-      if (error) {
-        console.warn(error);
-      }
+    dispatch({ type: 'CLEAR' })
 
-      if (scannedDevice) {
-        dispatch({ type: 'ADD_DEVICE', payload: scannedDevice });
-      }
-    });
+    bleManager.startDeviceScan(null, {
+      allowDuplicates: false
+      },
+      async (error, scannedDevice) => {
+        if (error) {
+          bleManager.stopDeviceScan();
+        }
 
+        if (scannedDevice) {
+          dispatch({ type: 'ADD_DEVICE', payload: scannedDevice });
+        }
+      }
+    );
+    
     setTimeout(() => {
       bleManager.stopDeviceScan();
     }, 10000);

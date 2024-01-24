@@ -39,7 +39,7 @@ export default function Login() {
     }
 
     const invalidLogin = (message: string) => {
-        Alert.alert('Login error.', message, [
+        Alert.alert('Login error', message, [
             { text: 'Close'}
         ]);
     }
