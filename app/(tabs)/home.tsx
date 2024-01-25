@@ -34,7 +34,7 @@ export default function HomeScreen() {
     username: '',
     email: '',
     role: '',
-    present: ''
+    present: false
   });
   
   useEffect(() => {

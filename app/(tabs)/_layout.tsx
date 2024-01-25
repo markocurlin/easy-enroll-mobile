@@ -3,6 +3,7 @@ import { router, Tabs } from 'expo-router';
 import { Pressable, useColorScheme } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Colors from '../../constants/Colors';
+import storeService from '../../services/Store';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -19,8 +20,8 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   const logout = () => {
-    // remove user from store
     router.push('/');
+    storeService.deleteUser();
   }
 
   return (

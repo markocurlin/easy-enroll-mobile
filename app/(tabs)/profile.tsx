@@ -3,6 +3,7 @@ import { StyleSheet, TextInput, ScrollView, TouchableOpacity, Alert } from 'reac
 import { Text, View } from '../../components/Themed';
 import { FontAwesome } from '@expo/vector-icons';
 import storeService from '../../services/Store';
+import apiService from "../../services/Api";
 
 export default function ProfileScreen() {
   const [id, setId] = useState(0);
@@ -14,15 +15,22 @@ export default function ProfileScreen() {
   const [password, setPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [isDisabled, setIsDisabled] = useState(false);
-  const [user, setUser] = useState({
-    id: '',
-    firstName: '',
-    lastName: '',
-    username: '',
-    email: '',
-    role: '',
-    present: ''
-  });
+
+  const [displayedFirstName, setDisplayedFirstName] = useState("");
+  const [displayedLastName, setDisplayedLastName] = useState("");
+
+  useEffect(() => {
+    let currentUser = storeService.getUser();
+
+    setId(currentUser.id);
+    setFirstName(currentUser.firstName);
+    setDisplayedFirstName(currentUser.firstName);
+    setDisplayedLastName(currentUser.lastName);
+    setLastName(currentUser.lastName);
+    setUsername(currentUser.username);
+    setEmail(currentUser.email);
+    setRole(currentUser.role);
+  }, []);
 
   const changeProfilePhoto = () => {
     Alert.alert('Comming soon!', 'We are still working on it...', [
@@ -35,20 +43,86 @@ export default function ProfileScreen() {
   }
 
   const saveProfile = () => {
-
+    if (isEditValid()) {
+      let editedUser = {
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        email: email,
+        password: password,
+        role: 'student'
+      }
+      
+      apiService.editUser(editedUser, id).then(() => {
+        Alert.alert('Success', 'User edited successfully!', [
+          { 
+            text: 'Close',
+            onPress: () => {
+              apiService.getUser(id).then((data: any) => {
+                setId(data._id);
+                setFirstName(data.firstName);
+                setDisplayedFirstName(data.firstName);
+                setLastName(data.lastName);
+                setDisplayedLastName(data.lastName);
+                setUsername(data.username);
+                setEmail(data.email);
+                setRole(data.role);
+              }).catch((error) => {
+                alertMessage(`Get user error: ${error.response.status}`);
+              });
+            }
+          }
+        ]);
+      }).catch((error) => {
+        alertMessage(`Edit user error: ${error.response.status}`);
+      });;
+    }
   }
 
-  useEffect(() => {
-    let currentUser = storeService.getUser();
+  const isEditValid = () => {
+    if (firstName === "") {
+      alertMessage("First name is empty!");
+      return false;
+    }
 
-    setUser(currentUser);
-    setId(currentUser.id);
-    setFirstName(currentUser.firstName);
-    setLastName(currentUser.lastName);
-    setUsername(currentUser.username);
-    setEmail(currentUser.email);
-    setRole(currentUser.role);
-  }, []);
+    if (lastName === "") {
+      alertMessage("Last name is empty!");
+      return false;
+    }
+
+    if (email === "") {
+      alertMessage("Email is empty!");
+      return false;
+    }
+
+    if (username === "") {
+      alertMessage("Username is empty!");
+      return false;
+    }
+
+    if (password === "") {
+      alertMessage("Password is empty!");
+      return false;
+    }
+
+    if (repeatPassword === "") {
+      alertMessage("Repeated password is empty!");
+      return false;
+    }
+
+    if (password !== repeatPassword) {
+      alertMessage("Passwords don't match!");
+      return false;
+    }
+
+    return true;
+  }
+
+  const alertMessage = (message: string) => {
+    Alert.alert('Edit profile error', message, [
+        { text: 'Close'}
+    ]);
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -60,7 +134,7 @@ export default function ProfileScreen() {
       </View>
       <View style={styles.profileInfoContainer}>
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>{`${user.firstName} ${user.lastName}`}</Text>
+          <Text style={styles.title}>{`${displayedFirstName} ${displayedLastName}`}</Text>
           <TouchableOpacity onPress={editProfile}>
             <FontAwesome name='edit' size={24} color='#e6e6e6' />
           </TouchableOpacity >

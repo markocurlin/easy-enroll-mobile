@@ -14,6 +14,8 @@ export default function Login() {
             apiService.login(username, password).then((data: any) => {
                 storeService.setUser(data);
                 router.push('/home');
+                setUsername('');
+                setPassword('');
             }).catch((error) => {
                 let statusCode = error.response.status;
                 let message = statusCode === 401 ? "Invalid password!": "User doesn't exist!";

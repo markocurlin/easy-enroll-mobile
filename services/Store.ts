@@ -6,7 +6,7 @@ class StoreService {
         username: '',
         email: '',
         role: '',
-        present: ''
+        present: false
     }
 
     setUser(newUser: any): void {
@@ -21,6 +21,16 @@ class StoreService {
 
     getUser(): any {
         return this.user;
+    }
+
+    deleteUser(): void {
+        this.user.id = 0;
+        this.user.firstName = '';
+        this.user.lastName = '';
+        this.user.username = '';
+        this.user.email = '';
+        this.user.role = '',
+        this.user.present = false;
     }
 }
 

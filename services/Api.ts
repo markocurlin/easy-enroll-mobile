@@ -5,7 +5,7 @@ class ApiService {
 
     async login(username: string, password: string): Promise<any> {
         try {
-            const response = await axios.post(`${this.apiUrl}/login`, {
+            const response = await axios.post(`${this.apiUrl}/login-mobile`, {
                 username: username,
                 password: password
             });
@@ -20,12 +20,46 @@ class ApiService {
         }
     }
 
-    async addUser(user: any): Promise<any> {
+    async getUser(id: number): Promise<any> {
+        try {
+            const response = await axios.get(`${this.apiUrl}/user/${id}`);
 
+            return new Promise((resolve) => {
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+            });
+        } catch(error) {
+            throw error;
+        }
     }
 
-    async editUser(user: any): Promise<any> {
-        
+    async addUser(user: any): Promise<any> {
+        try {
+            const response = await axios.post(`${this.apiUrl}/user`, user);
+
+            return new Promise((resolve) => {
+                if (response.status === 201) {
+                    resolve(response.data);
+                }
+            });
+        } catch(error) {
+            throw error;
+        }
+    }
+
+    async editUser(user: any, id: number): Promise<any> {
+        try {
+            const response = await axios.put(`${this.apiUrl}/user/${id}`, user);
+
+            return new Promise((resolve) => {
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+            });
+        } catch(error) {
+            throw error;
+        }
     }
 }
 

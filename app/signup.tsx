@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { router } from 'expo-router';
 import { StyleSheet, TextInput, TouchableOpacity, Image, Alert } from 'react-native';
 import { Text, View } from '../components/Themed';
 import apiService from "../services/Api";
@@ -16,13 +17,24 @@ export default function SignUpScreen() {
       let user = {
         firstName: firstName,
         lastName: lastName,
-        email: email,
         username: username,
-        password: password
+        email: email,
+        password: password,
+        role: 'student'
       }
 
-      //apiService.addUser(user);
-      //alertMessage("User added!");
+      apiService.addUser(user).then(() => {
+        Alert.alert('Success', 'User added!', [
+          { 
+            text: 'Close',
+            onPress: () => {
+              router.push('/');
+            }
+          }
+        ]);
+      }).catch((error) => {
+        alertMessage(`Sign up error: ${error.response.status}`);
+      });
     }
   }
 
@@ -66,7 +78,7 @@ export default function SignUpScreen() {
   }
 
   const alertMessage = (message: string) => {
-    Alert.alert('Login error', message, [
+    Alert.alert('Sign up error', message, [
         { text: 'Close'}
     ]);
   }
