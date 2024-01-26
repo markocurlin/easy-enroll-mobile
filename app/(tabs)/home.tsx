@@ -78,6 +78,11 @@ export default function HomeScreen() {
     }, 10000);
   };
 
+  const clearDevices = () => {
+    bleManager.stopDeviceScan();
+    dispatch({ type: 'CLEAR' })
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.titleContainer}>
@@ -89,7 +94,7 @@ export default function HomeScreen() {
         <TouchableOpacity style={styles.button} onPress={scanDevices}>
           <Text style={styles.buttonText}>Scan</Text>
         </TouchableOpacity >
-        <TouchableOpacity style={styles.button} onPress={() => dispatch({ type: 'CLEAR' })}>
+        <TouchableOpacity style={styles.button} onPress={clearDevices}>
           <Text style={styles.buttonText}>Clear</Text>
         </TouchableOpacity >
       </View>

@@ -10,6 +10,8 @@ export default function Login() {
     const [password, setPassword] = useState("");
     
     const login = () => {
+        router.push('/home');
+
         if (username !== "" && password !== "") {
             apiService.login(username, password).then((data: any) => {
                 storeService.setUser(data);

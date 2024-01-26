@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 import { Text } from './Themed';
-import { Device  } from 'react-native-ble-plx';
+import { Device, Service, ConnectionOptions} from 'react-native-ble-plx';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
@@ -10,11 +10,40 @@ type DeviceCardProps = {
 };
 export default function DeviceCard({ device }: DeviceCardProps){
     const [isConnected, setIsConnected] = useState(false);
-  
-    const connect = async () => {
-      await device.connect();
+    const [services, setServices] = useState<Service[]>([]);
 
-      setIsConnected(true);
+    const [characteristics, setCharacteristics] = useState<any>([]);
+
+    const connect = () => {
+      device.connect().then(connectedDevice => {
+        setIsConnected(true);
+        return connectedDevice.discoverAllServicesAndCharacteristics();
+      }).then(device => {
+        console.log(device)
+        return device.services();
+      }).then(services => {
+        console.log(services)
+        setServices(services);
+      })
+      .catch(error => console.error(error))
+
+      /*
+      .then(services => {
+        const serviceUUIDs = services.map(service => service.uuid);
+        return Promise.all(
+          serviceUUIDs.map(serviceUUID =>
+            device.characteristicsForService(serviceUUID)
+          )
+        );
+      })
+      .then(allCharacteristics => {
+        const flattenedCharacteristics = allCharacteristics.reduce(
+          (acc, curr) => acc.concat(curr),
+          []
+        );
+        //setCharacteristics(flattenedCharacteristics);
+      })
+      .catch(err => console.error(err)); */  
     }
 
     const disconnect = async () => {
@@ -35,16 +64,39 @@ export default function DeviceCard({ device }: DeviceCardProps){
       }
     }
 
-    const registerForLecture = () => {
+    const registerForLecture = async () => {
       if (isConnected) {
-        Alert.alert('Success', 'You have been registered for the lecture!', [
-          { text: 'Close'}
-        ]);
+        if (device) {
+          Alert.alert('Success', 'Device connected', [
+            { text: 'Close'}
+          ]);
+
+          if (services) {
+            Alert.alert('Success', `Services okay, length: ${services.length}`, [
+              { text: 'Close'}
+            ]);
+          }
+        }
+
+        /*
+        if (device && characteristics > 0) {
+          const targetCharacteristic = characteristics[0]; 
+
+          await device.writeCharacteristicWithResponseForService(
+            targetCharacteristic.serviceUUID,
+            targetCharacteristic.uuid,
+            "test123"
+          );
+
+          Alert.alert('Success', 'You have been registered for the lecture!', [
+            { text: 'Close'}
+          ]);
+        }*/
       }
     }
 
     return (
-      <TouchableOpacity style={styles.container} onPress={handleDeviceCard}>
+        <TouchableOpacity style={styles.container} onPress={handleDeviceCard}>
           <View style={styles.device}>
             <MaterialIcons name="bluetooth-connected" size={25} color="#e6e6e6" style={{ marginLeft: 8 }}/>
             
@@ -57,14 +109,13 @@ export default function DeviceCard({ device }: DeviceCardProps){
               </Text>
             </View>
           </View>
-
           { isConnected ? (
             <TouchableOpacity onPress={registerForLecture}>
               <AntDesign name="pluscircleo" size={25} color="#e6e6e6" style={{ paddingHorizontal: 10 }}/>
             </TouchableOpacity>
           ) : (<></>) }
-          
-      </TouchableOpacity>
+        
+        </TouchableOpacity> 
     );
   };
   
