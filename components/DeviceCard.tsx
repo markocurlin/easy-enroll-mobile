@@ -13,20 +13,27 @@ export default function DeviceCard({ device }: DeviceCardProps){
     const [services, setServices] = useState<Service[]>([]);
 
     const [characteristics, setCharacteristics] = useState<any>([]);
-
+  
     const connect = () => {
       device.connect().then(connectedDevice => {
         setIsConnected(true);
-        return connectedDevice.discoverAllServicesAndCharacteristics();
-      }).then(device => {
-        console.log(device)
+
+        console.log("connectedDevice: ", device)
+
+        //let test = connectedDevice.discoverAllServicesAndCharacteristics();
+        //console.log("discoverAllServicesAndCharacteristics: ", test);
+        //return connectedDevice.discoverAllServicesAndCharacteristics();
+      }).catch(error => console.error(error))
+      /*
+      .then(device => {
+        console.log("Device: ", device)
         return device.services();
       }).then(services => {
-        console.log(services)
+        console.log("Device services: ", services)
         setServices(services);
       })
       .catch(error => console.error(error))
-
+*/
       /*
       .then(services => {
         const serviceUUIDs = services.map(service => service.uuid);
