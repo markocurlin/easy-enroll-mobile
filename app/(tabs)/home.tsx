@@ -26,7 +26,6 @@ const reducer = (
 
 export default function HomeScreen() {
   const [scannedDevices, dispatch] = useReducer(reducer, []);
-  const [test, setTest] = useState<Device[]>([]);
   const bleManager = new BleManager();
   const [user, setUser] = useState({
     id: '',
@@ -55,14 +54,14 @@ export default function HomeScreen() {
     };
   }, []);
 
-  const scanDevices = () => {
+  const scanDevices = async () => {
     bleManager.stopDeviceScan();
     dispatch({ type: 'CLEAR' })
 
-    bleManager.startDeviceScan(null, null,
-      //{
-      //allowDuplicates: false
-      //},
+    bleManager.startDeviceScan(null,
+      {
+        allowDuplicates: false
+      },
       async (error, scannedDevice) => {
         if (error) {
           bleManager.stopDeviceScan();

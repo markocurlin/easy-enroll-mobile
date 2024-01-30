@@ -10,8 +10,6 @@ export default function Login() {
     const [password, setPassword] = useState("");
     
     const login = () => {
-        router.push('/home');
-        /*
         if (username !== "" && password !== "") {
             apiService.login(username, password).then((data: any) => {
                 storeService.setUser(data);
@@ -34,7 +32,6 @@ export default function Login() {
             let message = "Password is empty!";
             invalidLogin(message);
         }
-        */
     } 
 
     const forgotPassword = () => {

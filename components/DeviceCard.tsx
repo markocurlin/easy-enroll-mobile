@@ -1,56 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 import { Text } from './Themed';
-import { Device, Service, ConnectionOptions} from 'react-native-ble-plx';
+import { Device, ConnectionOptions} from 'react-native-ble-plx';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import storeService from '../services/Store';
 
 type DeviceCardProps = {
     device: Device;
 };
 export default function DeviceCard({ device }: DeviceCardProps){
     const [isConnected, setIsConnected] = useState(false);
-    const [services, setServices] = useState<Service[]>([]);
+    const [user, setUser] = useState({
+      id: '',
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      role: '',
+      present: false
+    });
 
-    const [characteristics, setCharacteristics] = useState<any>([]);
-  
-    const connect = () => {
-      device.connect().then(connectedDevice => {
+    useEffect(() => {
+      let currentUser = storeService.getUser();
+      setUser(currentUser);
+    }, []);
+
+    const connect = async () => {
+      await device.connect().then(() => {
         setIsConnected(true);
-
-        console.log("connectedDevice: ", device)
-
-        //let test = connectedDevice.discoverAllServicesAndCharacteristics();
-        //console.log("discoverAllServicesAndCharacteristics: ", test);
-        //return connectedDevice.discoverAllServicesAndCharacteristics();
-      }).catch(error => console.error(error))
-      /*
-      .then(device => {
-        console.log("Device: ", device)
-        return device.services();
-      }).then(services => {
-        console.log("Device services: ", services)
-        setServices(services);
-      })
-      .catch(error => console.error(error))
-*/
-      /*
-      .then(services => {
-        const serviceUUIDs = services.map(service => service.uuid);
-        return Promise.all(
-          serviceUUIDs.map(serviceUUID =>
-            device.characteristicsForService(serviceUUID)
-          )
-        );
-      })
-      .then(allCharacteristics => {
-        const flattenedCharacteristics = allCharacteristics.reduce(
-          (acc, curr) => acc.concat(curr),
-          []
-        );
-        //setCharacteristics(flattenedCharacteristics);
-      })
-      .catch(err => console.error(err)); */  
+      }).catch(error => console.error(error));
     }
 
     const disconnect = async () => {
@@ -73,36 +52,24 @@ export default function DeviceCard({ device }: DeviceCardProps){
 
     const registerForLecture = async () => {
       if (isConnected) {
-        if (device) {
-          Alert.alert('Success', 'Device connected', [
-            { text: 'Close'}
-          ]);
-
-          if (services) {
-            Alert.alert('Success', `Services okay, length: ${services.length}`, [
-              { text: 'Close'}
-            ]);
-          }
-        }
-
-        /*
-        if (device && characteristics > 0) {
-          const targetCharacteristic = characteristics[0]; 
-
-          await device.writeCharacteristicWithResponseForService(
-            targetCharacteristic.serviceUUID,
-            targetCharacteristic.uuid,
-            "test123"
-          );
-
+        await device.writeCharacteristicWithoutResponseForService(
+          "0000ABCD-0000-1000-8000-00805F9B34FB",
+          "0000ABCD-0000-1000-8000-00805F9B34FC",
+          `${user.id}${!user.present}`
+        ).then(() => {
           Alert.alert('Success', 'You have been registered for the lecture!', [
             { text: 'Close'}
           ]);
-        }*/
+        }).catch(() => {
+          Alert.alert('Error', 'Error while registering for the lecture!', [
+            { text: 'Close'}
+          ]);
+        })
       }
     }
 
     return (
+        device.name !== null ?
         <TouchableOpacity style={styles.container} onPress={handleDeviceCard}>
           <View style={styles.device}>
             <MaterialIcons name="bluetooth-connected" size={25} color="#e6e6e6" style={{ marginLeft: 8 }}/>
@@ -121,8 +88,9 @@ export default function DeviceCard({ device }: DeviceCardProps){
               <AntDesign name="pluscircleo" size={25} color="#e6e6e6" style={{ paddingHorizontal: 10 }}/>
             </TouchableOpacity>
           ) : (<></>) }
-        
-        </TouchableOpacity> 
+        </TouchableOpacity>
+        :
+        <></>
     );
   };
   
